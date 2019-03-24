@@ -1,18 +1,21 @@
 from flask import Flask, render_template, request
+from flask_cors import CORS, cross_origin
 app = Flask(__name__)
+CORS(app)
 import MySQLdb
+import json
 
-""""@app.route('/authori',methods = ['POST', 'GET'])
+@app.route('/authorize',methods = ['POST', 'GET'])
 def login():
    if request.method == 'POST':
       user = request.form['nm']
       password = request.form['ps']
-      print user,password
-   return 'ok'"""
+      #print user,password
+      return 'ok'
 
-@app.route('/authorize/<user>/<passw>')
-def authorize(user,passw):
-   p=str(passw)
+@app.route('/authorize/<user>/<password>')
+def authorize(user,password):
+   p=str(password)
    u1=str(user)
    dba = MySQLdb.connect(host="localhost", user="root", passwd="Swathi_123", db="admin")
    mycursor = dba.cursor()
@@ -29,16 +32,34 @@ def authorize(user,passw):
    	  result1 =mycursor.fetchone()
    	  r=result1[0]
 	  if r==p:
-	    val='authorized user'
+	    val=json.dumps({'status':True})
           else:
-	    val='unauthorized user'
+	    val=json.dumps({'status':False})
    else:
-	 val='unauthorized user'
-
-
-   
+	 val=json.dumps({'status':False})
    dba.close()
    return val
 
+@app.route('/loca/')
+def lo():
+    k={'tyt':'swa','lus':'sha'}
+    l=json.dumps(k)
+    return l
+
+@app.route('/location',methods = ['POST', 'GET'])
+def locate():
+   if request.method == 'GET':
+      customer_id = request.args.get('c_id')
+      app_id = request.args.get('a_id')
+      dba = MySQLdb.connect(host="localhost", user="root", passwd="Swathi_123", db=customer_id)
+      mycursor = dba.cursor()
+      values = mycursor.execute("SELECT latitude, longitude FROM tracking_details WHERE app_id=%s ORDER BY id DESC LIMIT 1",[app_id])
+      result =mycursor.fetchall()
+      l1={'latitude':(result[0])[0],'longitude':(result[0])[1]}
+      l2=json.dumps(l1)
+      dba.close()
+   return l2
+      
+
 if __name__ == '__main__':
-   app.run(debug = True)
+   app.run(host='0.0.0.0',debug = True)
