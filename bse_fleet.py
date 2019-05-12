@@ -34,9 +34,10 @@ def authorize():
 
 @app.route('/location', methods=['POST', 'GET'])
 def locate():
-    if request.method == 'GET':
-        customer_id = request.args.get('c_id')
-        app_id = request.args.get('a_id')
+    if request.method == 'POST':
+        data=request.get_json()
+        customer_id = data['c_id']
+        app_id = data['a_id']
         myclient=pymongo.MongoClient("mongodb://localhost:27017/")
         mydb=myclient[customer_id]
         mycol=mydb["tracking_details"]
