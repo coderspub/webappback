@@ -36,14 +36,16 @@ def authorize():
 def locate():
     if request.method == 'POST':
         data=request.get_json()
+        print(data)
         customer_id = data['c_id']
         app_id = data['a_id']
         myclient=pymongo.MongoClient("mongodb://localhost:27017/")
         mydb=myclient[customer_id]
         mycol=mydb["tracking_details"]
-        location=mycol.find_one({'app_id':app_id},{"_id":False})
+        location=mycol.find_one({'a_id':app_id},{"_id":False})
         myclient.close()
         l=json.dumps(location)
+        print(l)
     return l
 
 if __name__ == '__main__':
