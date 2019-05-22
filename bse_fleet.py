@@ -35,15 +35,17 @@ def authorize():
 @app.route('/location', methods=['POST', 'GET'])
 def locate():
     if request.method == 'POST':
-        b = request.get_json()
-        customer_id = b['c_id']
-        app_id = b['a_id']
+        data=request.get_json()
+        print(data)
+        customer_id = data['c_id']
+        app_id = data['a_id']
         myclient=pymongo.MongoClient("mongodb://localhost:27017/")
         mydb=myclient[customer_id]
         mycol=mydb["tracking_details"]
-        location=mycol.find_one({'app_id':app_id},{"_id":False,"speed":False,"datetime":False,"app_id":False})
+        location=mycol.find_one({'app_id':app_id},{"_id":False})
         myclient.close()
         l=json.dumps(location)
+        print(l)
     return l
 
 @app.route('/devices', methods=['POST', 'GET'])
