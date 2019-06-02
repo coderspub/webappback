@@ -15,8 +15,8 @@ CORS(app)
 def Authorize():
     if request.method == 'POST':
         data = request.get_json()
-        u1 = data['user']
-        p = data['password']
+        u1 = data['email_id']
+        p = data['passwd']
     dba = pymysql.connect(host='localhost', user='fleet',password='Fleet@123', db='fleet_admin')
     mycursor = dba.cursor()
     mycursor.execute("SELECT passwd FROM reg_user WHERE email_id=%s",[u1])
