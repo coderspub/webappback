@@ -147,7 +147,7 @@ def SignUp():
                 dba.commit()
                 mycursor.execute("DELETE FROM temp_signup WHERE email_id=%s",[email_id])
                 dba.commit()
-                mycursor.execute("CREATE DATABASE %s",[db_name])
+                mycursor.execute("CREATE DATABASE %s"%db_name)
                 dba.commit()
             else:
                 d={'status':False,'reason':'otp not verified'}
