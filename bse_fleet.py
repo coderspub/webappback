@@ -121,6 +121,40 @@ def VerifyOTP():
         d=json.dumps(d)
         return d
 
+@app.route('/SignUp',methods=['POST','GET'])
+def SignUp():
+    if request.method=='POST':
+        data=request.get_json()
+        email_id=data['email_id']
+        dba = pymysql.connect(host='localhost', user='fleet',password='Fleet@123', db='fleet_admin')
+        mycursor = dba.cursor()
+        mycursor.execute("SELECT verify FROM temp_signup WHERE email_id=%s",[email_id])
+        result = mycursor.fetchone()
+        if result:
+            if result[0]==1:
+                d={'status':True,'reason':'successful'}
+                mycursor.execute("SELECT db FROM reg_user ORDER BY id DESC LIMIT 1")
+                result=mycursor.fetchone()
+                db_name='fma'+str(int(result[0][3:])+1)
+                address=data['address']
+                company_name=data['company_name']
+                passwd=data['passwd']
+                country=data['country']
+                phonenumber=data['phonenumber']
+                zipcode=data['zipcode']
+                dt=str(datetime.now())
+                mycursor.execute("INSERT INTO reg_user (email_id,passwd,db,company_name,phonenumber,address,country,zipcode,datetime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",(email_id,passwd,db_name,company_name,phonenumber,address,country,zipcode,dt))
+                dba.commit()
+                mycursor.execute("DELETE FROM temp_signup WHERE email_id=%s",[email_id])
+                dba.commit()
+                mycursor.execute("CREATE DATABASE %s",[db_name])
+                dba.commit()
+            else:
+                d={'status':False,'reason':'otp not verified'}
+        else:
+            d={'status':False,'reason':'otp expired'}
+        d=json.dumps(d)
+        return d
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
