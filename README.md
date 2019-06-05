@@ -1,7 +1,7 @@
 # Flask backend API for fleet
 
 ## Login:
-    __/Authorize__ [POST]
+__/Authorize__ [POST]
     _Request_  : {"email_id":"xxxx@mail.com","passwd":"yyyy"}
     _Response_ : {"status":"True","reason":"successfull"}
                {"status":"True","reason":"Incorrect Password"}
