@@ -34,3 +34,11 @@
     - {"**status**":"True","**reason**":"successfull"}
     - {"**status**":"True","**reason**":"OTP not verified"}
     - {"**status**":"True","**reason**":"OTP expired"}
+
+## App Register:
+- __/AppReg__  [POST]
+- _Request_  :
+    - {"**email_id**":"xxxx@mail.com","**employee_name**":"xxxx","**phonenumber**":"1234567890","**designation**":"yyyy"}
+- _Response_ : 
+    - {"**status**":"True","**reason**":"successful","**appid**":"xxx"}
+    - {"**status**":"True","**reason**":"Wrong email"}
