@@ -42,3 +42,11 @@
 - _Response_ : 
     - {"**status**":"True","**reason**":"successful","**appid**":"xxx"}
     - {"**status**":"True","**reason**":"Wrong email"}
+
+## App List:
+- __/AppList__  [POST]
+- _Request_  :
+    - {"**email_id**":"xxxx@mail.com"}
+- _Response_ : 
+    - {"**status**":"True","**reason**":"successful","**applist**":[["xxx", "123456789", "yyy", "appxxx"]]}
+    - {"**status**":"True","**reason**":"Wrong email"}

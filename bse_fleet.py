@@ -135,7 +135,7 @@ def SignUp():
                 d={'status':True,'reason':'successful'}
                 mycursor.execute("SELECT db FROM reg_user ORDER BY id DESC LIMIT 1")
                 result=mycursor.fetchone()
-                db_name='fma'+str(int(result[0][3:])+1)
+                db_name='fms'+str(int(result[0][3:])+1)
                 address=data['address']
                 company_name=data['company_name']
                 passwd=data['passwd']
@@ -157,9 +157,45 @@ def SignUp():
         return d
 
 @app.route('/AppReg', methods=['POST', 'GET'])
-def Devices():
+def AppReg():
     if request.method == 'POST':
         data = request.get_json()
+        email_id=data['email_id']
+        dba = pymysql.connect(host='localhost', user='fleet',password='Fleet@123', db='fleet_admin')
+        mycursor = dba.cursor()
+        mycursor.execute("SELECT db FROM reg_user WHERE email_id=%s",[email_id])
+        result = mycursor.fetchone()
+        dba.close()
+        employee_name=data['employee_name']
+        phonenumber=data['phonenumber']
+        designation=data['designation']
+        dt=str(datetime.now())
+        if result!=None:
+            db_name=result[0]
+            dba = pymysql.connect(host='localhost', user='fleet',password='Fleet@123', db=db_name)
+            mycursor = dba.cursor()
+            mycursor.execute("SELECT appid FROM applist ORDER BY id DESC LIMIT 1")
+            result = mycursor.fetchone()
+            if result!=None:
+                appid='app'+str(int(result[0][3:])+1)
+                mycursor.execute("INSERT INTO applist (employee_name,phonenumber,designation,appid,datetime) VALUES (%s,%s,%s,%s,%s)",(employee_name,phonenumber,designation,appid,dt))
+                dba.commit()
+            else:
+                appid="app1"
+                mycursor.execute("INSERT INTO applist (employee_name,phonenumber,designation,appid,datetime) VALUES (%s,%s,%s,%s,%s)",(employee_name,phonenumber,designation,appid,dt))
+                dba.commit()
+            dba.close()
+            d={'status':True,'reason':'successful'}
+        else:
+            d={'status':False,'reason':'Wrong email'}
+        d=json.dumps(d)
+        return d
+
+@app.route('/AppList', methods=['POST', 'GET'])
+def AppList():
+    if request.method == 'POST':
+        data = request.get_json()
+        print(data)
         email_id=data['email_id']
         dba = pymysql.connect(host='localhost', user='fleet',password='Fleet@123', db='fleet_admin')
         mycursor = dba.cursor()
@@ -170,22 +206,10 @@ def Devices():
             db_name=result[0]
             dba = pymysql.connect(host='localhost', user='fleet',password='Fleet@123', db=db_name)
             mycursor = dba.cursor()
-            mycursor.execute("SELECT appid FROM applist ORDER BY id DESC LIMIT 1")
-            result = mycursor.fetchone()
-            if result!=None:
-                appid='app'+str(int(result[0][3:])+1)
-                employee_name=data['employe_name']
-                phonenumber=data['phonenumber']
-                designation=data['designation']
-                dt=str(datetime.now())
-                mycursor.execute("INSERT INTO applist (employee_name,phonenumber,designation,appid,datetime) VALUES (%s,%s,%s,%s,%s)",(employee_name,phonenumber,designation,appid,dt))
-                dba.commit()
-            else:
-                appid="app1"
-                mycursor.execute("INSERT INTO applist (employee_name,phonenumber,designation,appid,datetime) VALUES (%s,%s,%s,%s,%s)",(employee_name,phonenumber,designation,appid,dt))
-                dba.commit()
+            mycursor.execute("SELECT employee_name,phonenumber,designation,appid FROM applist")
+            result = mycursor.fetchall()
             dba.close()
-            d={'status':True,'reason':'successful','appid':appid}
+            d={'status':True,'reason':'successful','applist':result}
         else:
             d={'status':False,'reason':'Wrong email'}
         d=json.dumps(d)
