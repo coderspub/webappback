@@ -50,3 +50,30 @@
 - _Response_ : 
     - {"**status**":"True","**reason**":"successful","**applist**":[["xxx", "123456789", "yyy", "appxxx"]]}
     - {"**status**":"True","**reason**":"Wrong email"}
+
+## App Detail:
+- __/AppDetail__  [POST]
+- _Request_  :
+    - {"**email_id**":"xxxx@mail.com","**appid**","xxx"}
+- _Response_ : 
+    - {"**status**":"True","**reason**":"successful","**appdetail**":["xxx", "123456789", "yyy", "appxxx"]}
+    - {"**status**":"True","**reason**":"appid not exist"}
+    - {"**status**":"True","**reason**":"Wrong email"}
+
+## App Edit:
+- __/AppEdit__  [POST]
+- _Request_  :
+    - {"**email_id**":"xxxx@mail.com","**appid**","xxx"}
+- _Response_ : 
+    - {"**status**":"True","**reason**":"successful"}
+    - {"**status**":"True","**reason**":"appid not exist"}
+    - {"**status**":"True","**reason**":"Wrong email"}
+
+## App Remove:
+- __/AppRemove__  [POST]
+- _Request_  :
+    - {"**email_id**":"xxxx@mail.com","**appid**","xxx"}
+- _Response_ : 
+    - {"**status**":"True","**reason**":"successful"}
+    - {"**status**":"True","**reason**":"appid not exist"}
+    - {"**status**":"True","**reason**":"Wrong email"}

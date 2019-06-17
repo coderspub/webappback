@@ -11,7 +11,7 @@ from email.mime.text import MIMEText as t2b
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/Authorize', methods=['POST', 'GET'])
+@app.route('/Authorize', methods=['POST'])
 def Authorize():
     if request.method == 'POST':
         data = request.get_json()
@@ -32,7 +32,7 @@ def Authorize():
         d=json.dumps(d)
         return d
 
-@app.route('/Location', methods=['POST', 'GET'])
+@app.route('/Location', methods=['POST'])
 def Location():
     if request.method == 'POST':
         data=request.get_json()
@@ -48,7 +48,7 @@ def Location():
         print(d)
         return d
 
-@app.route('/Devices', methods=['POST', 'GET'])
+@app.route('/Devices', methods=['POST'])
 def Devices():
     if request.method == 'POST':
         data = request.get_json()
@@ -65,7 +65,7 @@ def Devices():
         dba.close()
         return d
 
-@app.route('/SignUpOTP',methods=['POST','GET'])
+@app.route('/SignUpOTP',methods=['POST'])
 def SignUpOTP():
     if request.method=='POST':
         data=request.get_json()
@@ -98,7 +98,7 @@ def SignUpOTP():
         d=json.dumps(d)
         return d
 
-@app.route('/VerifyOTP',methods=['POST','GET'])
+@app.route('/VerifyOTP',methods=['POST'])
 def VerifyOTP():
     if request.method=='POST':
         data=request.get_json()
@@ -121,7 +121,7 @@ def VerifyOTP():
         d=json.dumps(d)
         return d
 
-@app.route('/SignUp',methods=['POST','GET'])
+@app.route('/SignUp',methods=['POST'])
 def SignUp():
     if request.method=='POST':
         data=request.get_json()
@@ -156,7 +156,7 @@ def SignUp():
         d=json.dumps(d)
         return d
 
-@app.route('/AppReg', methods=['POST', 'GET'])
+@app.route('/AppReg', methods=['POST'])
 def AppReg():
     if request.method == 'POST':
         data = request.get_json()
@@ -191,7 +191,7 @@ def AppReg():
         d=json.dumps(d)
         return d
 
-@app.route('/AppList', methods=['POST', 'GET'])
+@app.route('/AppList', methods=['POST'])
 def AppList():
     if request.method == 'POST':
         data = request.get_json()
@@ -210,6 +210,96 @@ def AppList():
             result = mycursor.fetchall()
             dba.close()
             d={'status':True,'reason':'successful','applist':result}
+        else:
+            d={'status':False,'reason':'Wrong email'}
+        d=json.dumps(d)
+        return d
+
+@app.route('/AppDetail', methods=['POST'])
+def AppDetail():
+    if request.method == 'POST':
+        data = request.get_json()
+        print(data)
+        email_id=data['email_id']
+        appid=data['appid']
+        dba = pymysql.connect(host='localhost', user='fleet',password='Fleet@123', db='fleet_admin')
+        mycursor = dba.cursor()
+        mycursor.execute("SELECT db FROM reg_user WHERE email_id=%s",[email_id])
+        result = mycursor.fetchone()
+        dba.close()
+        if result!=None:
+            db_name=result[0]
+            dba = pymysql.connect(host='localhost', user='fleet',password='Fleet@123', db=db_name)
+            mycursor = dba.cursor()
+            mycursor.execute("SELECT employee_name,phonenumber,designation,appid FROM applist WHERE appid=%s",[appid])
+            result = mycursor.fetchone()
+            dba.close()
+            if result:
+                d={'status':True,'reason':'successful','appdetail':result}
+            else:
+                d={'status':False,'reason':'appid not exist'}
+        else:
+            d={'status':False,'reason':'Wrong email'}
+        d=json.dumps(d)
+        return d
+
+@app.route('/AppEdit', methods=['POST'])
+def AppEdit():
+    if request.method == 'POST':
+        data = request.get_json()
+        email_id=data['email_id']
+        dba = pymysql.connect(host='localhost', user='fleet',password='Fleet@123', db='fleet_admin')
+        mycursor = dba.cursor()
+        mycursor.execute("SELECT db FROM reg_user WHERE email_id=%s",[email_id])
+        result = mycursor.fetchone()
+        dba.close()
+        employee_name=data['employee_name']
+        phonenumber=data['phonenumber']
+        designation=data['designation']
+        appid=data['appid']
+        dt=str(datetime.now())
+        if result!=None:
+            db_name=result[0]
+            dba = pymysql.connect(host='localhost', user='fleet',password='Fleet@123', db=db_name)
+            mycursor = dba.cursor()
+            mycursor.execute("SELECT appid FROM applist WHERE appid=%s",[appid])
+            result = mycursor.fetchone()
+            if result!=None:
+                mycursor.execute("UPDATE applist SET employee_name=%s,phonenumber=%s,designation=%s,datetime=%s WHERE appid=%s",(employee_name,phonenumber,designation,dt,appid))
+                dba.commit()
+                d={'status':True,'reason':'successful'}
+            else:
+                d={'status':False,'reason':'appid not exist'}
+            dba.close()
+        else:
+            d={'status':False,'reason':'Wrong email'}
+        d=json.dumps(d)
+        return d
+
+@app.route('/AppRemove', methods=['POST'])
+def AppRemove():
+    if request.method == 'POST':
+        data = request.get_json()
+        email_id=data['email_id']
+        appid=data['appid']
+        dba = pymysql.connect(host='localhost', user='fleet',password='Fleet@123', db='fleet_admin')
+        mycursor = dba.cursor()
+        mycursor.execute("SELECT db FROM reg_user WHERE email_id=%s",[email_id])
+        result = mycursor.fetchone()
+        dba.close()
+        if result!=None:
+            db_name=result[0]
+            dba = pymysql.connect(host='localhost', user='fleet',password='Fleet@123', db=db_name)
+            mycursor = dba.cursor()
+            mycursor.execute("SELECT appid FROM applist WHERE appid=%s",[appid])
+            result = mycursor.fetchone()
+            if result!=None:
+                mycursor.execute("DELETE FROM applist WHERE appid=%s",(appid))
+                dba.commit()
+                d={'status':True,'reason':'successful'}
+            else:
+                d={'status':False,'reason':'appid not exist'}
+            dba.close()
         else:
             d={'status':False,'reason':'Wrong email'}
         d=json.dumps(d)
