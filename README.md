@@ -48,7 +48,7 @@
 - _Request_  :
     - {"**email_id**":"xxxx@mail.com"}
 - _Response_ : 
-    - {"**status**":"True","**reason**":"successful","**applist**":[["xxx", "123456789", "yyy", "appxxx"]]}
+    - {"**status**":"True","**reason**":"successful","**applist**":[{"x":"xxx", "y":"123456789", "z":"yyy", "a":"appxxx"}]}
     - {"**status**":"False","**reason**":"Wrong email"}
 
 ## App Detail:
@@ -56,7 +56,7 @@
 - _Request_  :
     - {"**email_id**":"xxxx@mail.com","**appid**","xxx"}
 - _Response_ : 
-    - {"**status**":"True","**reason**":"successful","**appdetail**":["xxx", "123456789", "yyy", "appxxx"]}
+    - {"**status**":"True","**reason**":"successful","**appdetail**":{"x":"xxx", "y":"123456789", "z":"yyy", "a":"appxxx"}]}
     - {"**status**":"False","**reason**":"appid not exist"}
     - {"**status**":"False","**reason**":"Wrong email"}
 
