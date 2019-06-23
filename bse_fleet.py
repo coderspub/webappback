@@ -13,7 +13,7 @@ from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 
-log_file='/home/suriya/webappback.log'
+log_file='/home/suriya_e_aaron/webappback.log'
 
 app = Flask(__name__)
 CORS(app)
