@@ -5,6 +5,7 @@ from email.mime.text import MIMEText as t2b
 from smtplib import SMTP
 import logging
 from logging.handlers import RotatingFileHandler
+import base64
 
 import pymongo
 import pymysql
@@ -12,14 +13,13 @@ from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 
-log_file='/home/suriya_e_aaron/webappback.log'
+log_file='/home/suriya/webappback.log'
 
 app = Flask(__name__)
 CORS(app)
 handler = RotatingFileHandler(log_file, maxBytes=10000, backupCount=1)
-handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s - %(message)s")
-handler.setFormatter(formatter)
+handler.setLevel(logging.INFO)
+handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
 app.logger.addHandler(handler)
 bcrypt=Bcrypt()
 
@@ -134,12 +134,7 @@ def SignUp():
             result = cur.fetchone()
             if result:
                 if result['verify']==1:
-                    cur.execute("SELECT db FROM reg_user ORDER BY id DESC LIMIT 1")
-                    result=cur.fetchone()
-                    if result!=0:
-                        db_name='fms'+str(int(result['db'][3:])+1)
-                    else:
-                        db_name='fms1'
+                    db_name='fms_'+base64.b64encode(data['email_id'])
                     cur.execute("INSERT INTO reg_user (email_id,passwd,db,company_name,phonenumber,address,country,zipcode) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",(data['email_id'],data['passwd'],db_name,data['company_name'],data['phonenumber'],data['address'],data['country'],data['zipcode']))
                     cur.execute("DELETE FROM temp_signup WHERE email_id=%s",(data['email_id']))
                     cur.execute("CREATE DATABASE %s"%db_name)
@@ -172,12 +167,12 @@ def AppReg():
             with dba.cursor() as cur:
                 cur.execute("SELECT appid FROM applist ORDER BY id DESC LIMIT 1")
                 result = cur.fetchone()
-            if result!=None:
-                appid='app'+str(int(result['appid'][3:])+1)
-            else:
-                appid="app1"
-            cur.execute("INSERT INTO applist (employee_name,phonenumber,designation,appid) VALUES (%s,%s,%s,%s)",(data['employee_name'],data['phonenumber'],data['designation'],appid))
-            dba.commit()
+                if result!=None:
+                    appid='app'+str(int(result['appid'][3:])+1)
+                else:
+                    appid="app1"
+                cur.execute("INSERT INTO applist (employee_name,phonenumber,designation,appid) VALUES (%s,%s,%s,%s)",(data['employee_name'],data['phonenumber'],data['designation'],appid))
+                dba.commit()
             dba.close()
             return jsonify({'status':True,'reason':'successful'})
         else:
@@ -214,7 +209,7 @@ def AppDetail():
         if result!=None:
             dba = database(result['db'])
             with dba.cursor() as cur:
-                cur.execute("SELECT employee_name,phonenumber,designation,appid FROM applist WHERE appid=%s",[data['appid']])
+                cur.execute("SELECT employee_name,phonenumber,designation,appid FROM applist WHERE appid=%s",(data['appid']))
                 result = cur.fetchone()
             dba.close()
             if result:
