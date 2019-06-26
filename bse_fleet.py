@@ -13,7 +13,7 @@ from flask import Flask, jsonify, render_template, request, json
 from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 
-log_file='/home/suriya_e_aaron/webappback.log'
+log_file='/home/suriya/webappback.log'
 
 app = Flask(__name__)
 CORS(app)
@@ -154,6 +154,7 @@ def SignUp():
                     dba = database(db_name)
                     with dba.cursor() as cur:
                         cur.execute("CREATE TABLE applist (id INT PRIMARY KEY AUTO_INCREMENT,employee_name VARCHAR(20),phonenumber VARCHAR(20),designation VARCHAR(20),appid VARCHAR(20),datetime DATETIME DEFAULT CURRENT_TIMESTAMP)")
+                        cur.execute("CREATE TABLE app_tracking_details (id INT PRIMARY KEY AUTO_INCREMENT,location POINT,speed VARCHAR(20),accuracy VARCHAR(50),datetime DATETIME DEFAULT CURRENT_TIMESTAMP,appid VARCHAR(20))")
                         dba.commit()
                     dba.close()
                     return jsonify({'status':True,'reason':'successful'})
