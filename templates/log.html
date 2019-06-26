@@ -1,3 +1,29 @@
+<style>
+    .base{
+        background-color: #ddd;
+        padding:1em;
+        margin: 0.25em;
+        border-radius: 3px;
+    }
+    ul{
+        list-style: none;
+    }
+    li{
+        font-family: monospace;
+    }
+</style>
+<!-- <div class="base">
 <pre>
 {{ text }}
 </pre>
+</div> -->
+<ul> 
+        <!-- For loop logic of jinja template -->
+        {%for i in range(0, len)%} 
+          
+            <li class = "base">
+                {{text[i]}}
+            </li> 
+        {%endfor%} 
+          
+</ul>

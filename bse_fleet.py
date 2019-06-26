@@ -9,7 +9,7 @@ import base64
 
 import pymongo
 import pymysql
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, json
 from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 
@@ -38,9 +38,10 @@ def notfound(e):
 
 @app.route('/log')
 def log():
-	with open(log_file, 'r+') as f:
-	    content = f.read()
-	return render_template('log.html', text=content)
+    with open(log_file, 'r+') as f:
+        content = f.read()
+    c =content.split("\n")
+    return render_template('log.html',len = len(c) ,text=c)
 
 @app.route('/Authorize', methods=['POST'])
 def Authorize():
@@ -62,15 +63,25 @@ def Authorize():
 @app.route('/Location', methods=['POST'])
 def Location():
     if request.method == 'POST':
-        data=request.get_json()
-        customer_id = data['c_id']
-        app_id = data['a_id']
-        myclient=pymongo.MongoClient("mongodb://localhost:27017/")
-        mydb=myclient[customer_id]
-        mycol=mydb["tracking_details"]
-        d=mycol.find_one({'app_id':app_id},{"_id":False})
-        myclient.close()
-        return jsonify(d)
+        data = request.get_json()
+        dba = database()
+        with dba.cursor() as cur:
+            cur.execute("SELECT db FROM reg_user WHERE email_id=%s",(data['email_id']))
+            result = cur.fetchone()
+        dba.close()
+        if result!=None:
+            dba = database(result['db'])
+            with dba.cursor() as cur:
+                cur.execute("SELECT ST_AsGeoJson(location) as location, DATE_FORMAT(datetime,'%%Y-%%m-%%d %%H:%%i:%%s') as datetime, speed FROM app_tracking_details WHERE appid=%s ORDER BY id DESC LIMIT 1",(data['appid']))
+                result = cur.fetchone()
+            dba.close()
+            if result:
+                result['location']=json.loads(result['location'])
+                return jsonify({'status':True,'reason':'successful','trackingdetail':result})
+            else:
+                return jsonify({'status':False,'reason':'appid not exist'})
+        else:
+            return jsonify({'status':False,'reason':'Wrong email'})
 
 @app.route('/SignUpOTP',methods=['POST'])
 def SignUpOTP():
