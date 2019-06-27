@@ -13,14 +13,12 @@ from flask import Flask, jsonify, render_template, request, json
 from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 
-try:
-    log_file='/home/suriya_e_aaron/webappback.log'
-except:
-    log_file='/home/suriya/webappback.log'
-
 app = Flask(__name__)
 CORS(app)
-handler = RotatingFileHandler(log_file, maxBytes=10000, backupCount=1)
+try:
+    handler = RotatingFileHandler('/home/suriya_e_aaron/webappback.log', maxBytes=10000, backupCount=1)
+except:
+    handler = RotatingFileHandler('/home/suriya/webappback.log', maxBytes=10000, backupCount=1)
 handler.setLevel(logging.INFO)
 handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
 app.logger.addHandler(handler)
@@ -148,7 +146,7 @@ def SignUp():
             result = cur.fetchone()
             if result:
                 if result['verify']==1:
-                    db_name='fms_'+base64.b64encode(data['email_id'])
+                    db_name='fms_'+base64.b64encode(data['email_id'].encode('utf-8')).decode('utf-8')
                     cur.execute("INSERT INTO reg_user (email_id,passwd,db,company_name,phonenumber,address,country,zipcode) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",(data['email_id'],data['passwd'],db_name,data['company_name'],data['phonenumber'],data['address'],data['country'],data['zipcode']))
                     cur.execute("DELETE FROM temp_signup WHERE email_id=%s",(data['email_id']))
                     cur.execute("CREATE DATABASE %s"%db_name)
@@ -180,12 +178,7 @@ def AppReg():
         if result!=None:
             dba = database(result['db'])
             with dba.cursor() as cur:
-                cur.execute("SELECT appid FROM applist ORDER BY id DESC LIMIT 1")
-                result = cur.fetchone()
-                if result!=None:
-                    appid='app'+str(int(result['appid'][3:])+1)
-                else:
-                    appid="app1"
+                appid='app_'+base64.b64encode(data['phonenumber'].encode('utf-8')).decode('utf-8')
                 cur.execute("INSERT INTO applist (employee_name,phonenumber,designation,appid) VALUES (%s,%s,%s,%s)",(data['employee_name'],data['phonenumber'],data['designation'],appid))
                 dba.commit()
             dba.close()
