@@ -17,8 +17,10 @@ app = Flask(__name__)
 CORS(app)
 try:
     handler = RotatingFileHandler('/home/suriya_e_aaron/webappback.log', maxBytes=10000, backupCount=1)
+    log_file='/home/suriya_e_aaron/webappback.log'
 except:
     handler = RotatingFileHandler('/home/suriya/webappback.log', maxBytes=10000, backupCount=1)
+    log_file='/home/suriya/webappback.log'
 handler.setLevel(logging.INFO)
 handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
 app.logger.addHandler(handler)
