@@ -77,3 +77,20 @@
     - {"**status**":"True","**reason**":"successful"}
     - {"**status**":"False","**reason**":"appid not exist"}
     - {"**status**":"False","**reason**":"Wrong email"}
+
+## User Detail:
+- __/UserDetail__  [POST]
+- _Request_  :
+    - {"**email_id**":"xxxx@mail.com"}
+- _Response_ : 
+    - {"**status**":"True","**reason**":"successful","**userdetail**":{"x":"xxx", "y":"123456789", "z":"yyy", "a":"appxxx"}]}
+    - {"**status**":"False","**reason**":"Wrong email"}
+
+## Location:
+- __/Location__  [POST]
+- _Request_  :
+    - {"**email_id**":"xxxx@mail.com","**appid**","xxx"}
+- _Response_ : 
+    - {"**status**":"True","**reason**":"successful","**trackingdetail**":{"location":{"type": "POINT", "coordinates":[80.2,13.01]},"datetime":"1997-04-22 06:30:45"}]}
+    - {"**status**":"False","**reason**":"appid not exist"}
+    - {"**status**":"False","**reason**":"Wrong email"}

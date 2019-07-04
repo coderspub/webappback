@@ -180,9 +180,15 @@ def AppReg():
         if result!=None:
             dba = database(result['db'])
             with dba.cursor() as cur:
-                appid='app_'+base64.b64encode(data['phonenumber'].encode('utf-8')).decode('utf-8')
-                cur.execute("INSERT INTO applist (employee_name,phonenumber,designation,appid) VALUES (%s,%s,%s,%s)",(data['employee_name'],data['phonenumber'],data['designation'],appid))
-                dba.commit()
+                cur.execute("SELECT appid FROM applist WHERE phonenumber=%s",(data['phonenumber']))
+                result = cur.fetchone()
+                if result!=None:
+                    dba.close()
+                    return jsonify({'status':False,'reason':'Phonenumber already exist'})
+                else:
+                    appid='app_'+base64.b64encode(data['phonenumber'].encode('utf-8')).decode('utf-8')
+                    cur.execute("INSERT INTO applist (employee_name,phonenumber,designation,appid) VALUES (%s,%s,%s,%s)",(data['employee_name'],data['phonenumber'],data['designation'],appid))
+                    dba.commit()
             dba.close()
             return jsonify({'status':True,'reason':'successful'})
         else:
