@@ -94,3 +94,12 @@
     - {"**status**":"True","**reason**":"successful","**trackingdetail**":{"location":{"type": "POINT", "coordinates":[80.2,13.01]},"datetime":"1997-04-22 06:30:45"}]}
     - {"**status**":"False","**reason**":"appid not exist"}
     - {"**status**":"False","**reason**":"Wrong email"}
+
+## Tracking History:
+- __/TrackingHistory__  [POST]
+- _Request_  :
+    - {"**email_id**":"xxxx@mail.com","**appid**","xxx","date":"1997-04-22"}
+- _Response_ : 
+    - {"**status**":"True","**reason**":"successful","**trackinghistory**":[{"location":{"type": "POINT", "coordinates":[80.2,13.01]},"datetime":"1997-04-22 06:30:45"}]},{"location":{"type": "POINT", "coordinates":[80.2,13.01]},"datetime":"1997-04-22 06:30:45"}]}]
+    - {"**status**":"False","**reason**":"no history"}
+    - {"**status**":"False","**reason**":"Wrong email"}
