@@ -86,6 +86,30 @@ def Location():
         else:
             return jsonify({'status':False,'reason':'Wrong email'})
 
+@app.route('/TrackingHistory', methods=['POST'])
+def TrackingHistory():
+    if request.method == 'POST':
+        data = request.get_json()
+        dba = database()
+        with dba.cursor() as cur:
+            cur.execute("SELECT db FROM reg_user WHERE email_id=%s",(data['email_id']))
+            result = cur.fetchone()
+        dba.close()
+        if result!=None:
+            dba = database(result['db'])
+            with dba.cursor() as cur:
+                cur.execute("SELECT ST_AsGeoJson(location) as location, DATE_FORMAT(datetime,'%%Y-%%m-%%d %%H:%%i:%%s') as datetime, speed FROM app_tracking_details WHERE appid=%s AND DATE(datetime)=%s",(data['appid'],data['date']))
+                result = cur.fetchall()
+            dba.close()
+            if result:
+                for i in result:
+                    i['location']=json.loads(i['location'])
+                return jsonify({'status':True,'reason':'successful','trackinghistory':result})
+            else:
+                return jsonify({'status':False,'reason':'no history'})
+        else:
+            return jsonify({'status':False,'reason':'Wrong email'})
+
 @app.route('/SignUpOTP',methods=['POST'])
 def SignUpOTP():
     if request.method=='POST':
