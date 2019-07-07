@@ -173,7 +173,7 @@ def SignUp():
             if result:
                 if result['verify']==1:
                     db_name='fms_'+base64.b64encode(data['email_id'].encode('utf-8')).decode('utf-8')
-                    cur.execute("INSERT INTO reg_user (email_id,passwd,db,company_name,phonenumber,address,country,zipcode) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",(data['email_id'],data['passwd'],db_name,data['company_name'],data['phonenumber'],data['address'],data['country'],data['zipcode']))
+                    cur.execute("INSERT INTO reg_user (email_id,passwd,db,company_name,phonenumber,address,country,zipcode) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",(data['email_id'],data['passwd'],db_name,data['company_name'].title(),data['phonenumber'],data['address'].title(),data['country'],data['zipcode']))
                     cur.execute("DELETE FROM temp_signup WHERE email_id=%s",(data['email_id']))
                     cur.execute("CREATE DATABASE %s"%db_name)
                     dba.commit()
@@ -211,7 +211,7 @@ def AppReg():
                     return jsonify({'status':False,'reason':'Phonenumber already exist'})
                 else:
                     appid='app_'+base64.b64encode(data['phonenumber'].encode('utf-8')).decode('utf-8')
-                    cur.execute("INSERT INTO applist (employee_name,phonenumber,designation,appid) VALUES (%s,%s,%s,%s)",(data['employee_name'],data['phonenumber'],data['designation'],appid))
+                    cur.execute("INSERT INTO applist (employee_name,phonenumber,designation,appid) VALUES (%s,%s,%s,%s)",(data['employee_name'].title(),data['phonenumber'],data['designation'].upper(),appid))
                     dba.commit()
             dba.close()
             return jsonify({'status':True,'reason':'successful'})
